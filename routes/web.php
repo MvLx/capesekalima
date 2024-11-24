@@ -39,8 +39,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 });
 
-// Middleware khusus Admin dan Teacher
-Route::middleware(['auth', 'role:Admin,Teacher'])->group(function () {
+// Middleware khusus Teacher
+Route::middleware(['auth', 'role:Teacher'])->group(function () {
     Route::resource('courses', CourseController::class);
     Route::resource('contents', ContentController::class);
 });
