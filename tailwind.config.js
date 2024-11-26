@@ -1,5 +1,6 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
+import addIconSelectors from `@iconify/tailwindcss`;
 
 /** @type {import('tailwindcss').Config} */
 export default {
