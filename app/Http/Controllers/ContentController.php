@@ -11,7 +11,7 @@ class ContentController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('role:Admin,Teacher');
+        $this->middleware('role:Admin,Teacher,Student');
     }
     public function index()
     {
@@ -42,13 +42,20 @@ class ContentController extends Controller
             }
         } else if ($request->media_type === 'youtube') {
             $mediaPath = $request->media_path;
+
+
+            if (preg_match('/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w\-]+)/', $mediaPath, $matches)) {
+                $mediaPath = 'https://www.youtube.com/embed/' . $matches[1];
+            } else {
+                return redirect()->back()->withErrors(['media_path' => 'Invalid YouTube URL.']);
+            }
         }
 
         Content::create([
             'course_id' => $request->course_id,
             'title' => $request->title,
             'body' => $request->body,
-            'teacher_id' => auth()->id(),
+            'user_id' => auth()->id(),
             'media_type' => $request->media_type,
             'media_path' => $mediaPath,
         ]);
@@ -109,5 +116,11 @@ class ContentController extends Controller
          $content->delete();
  
          return redirect()->route('contents.index')->with('success', 'Content deleted successfully.');
+     }
+     public function view($id)
+     {
+         $content = Content::findOrFail($id);
+     
+         return view('contents.view', compact('content'));
      }
 }
