@@ -11,7 +11,7 @@ class CourseController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('role:Admin,Teacher,Student');
+        $this->middleware('role:Admin,Teacher');
     }
     
     // Menampilkan daftar semua kursus
@@ -50,20 +50,15 @@ class CourseController extends Controller
 
     // Menampilkan detail kursus berdasarkan ID
     public function show($id)
-{
-    $course = Course::with('enrollments.user')->findOrFail($id);
-    return view('courses.show', compact('course'));
-}
+    {
+        $course = Course::findOrFail($id);
+        return view('courses.show', compact('course'));
+    }
 
     // Menampilkan form untuk mengedit kursus berdasarkan ID
     public function edit($id)
     {
         $course = Course::findOrFail($id);
-
-        if (!$this->authorizeCourseAction($course)) {
-            abort(403, 'You are not authorized to edit this course.');
-        }
-
         return view('courses.edit', compact('course'));
     }
 
@@ -78,27 +73,13 @@ class CourseController extends Controller
         ]);
 
         $course = Course::findOrFail($id);
-
-        if (!$this->authorizeCourseAction($course)) {
-            abort(403, 'You are not authorized to update this course.');
-        }
-
         $course->update([
             'course_name' => $request->course_name,
             'description' => $request->description,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
+            'user_id' => auth()->id(),
         ]);
-
-        foreach ($course->enrollments as $enrollment) {
-            NotificationController::createNotification(
-                $enrollment->user_id,
-                "Course Updated: {$course->course_name}",
-                "The course '{$course->course_name}' has been updated.",
-                $course->id
-            );
-        }
-    
 
         return redirect()->route('courses.index')->with('success', 'Course updated successfully.');
     }
@@ -107,53 +88,9 @@ class CourseController extends Controller
     public function destroy($id)
     {
         $course = Course::findOrFail($id);
-
-        if (!$this->authorizeCourseAction($course)) {
-            abort(403, 'You are not authorized to delete this course.');
-        }
-
         $course->delete();
 
         return redirect()->route('courses.index')->with('success', 'Course deleted successfully.');
     }
-
-    public function dashboard()
-{
-    $popularCourses = Course::withCount(['enrollments' => function ($query) {
-        $query->whereHas('user', function ($subQuery) {
-            $subQuery->where('role', 'Student'); // Hanya menghitung Student
-        });
-    }])
-    ->orderBy('enrollments_count', 'desc') // Urutkan berdasarkan jumlah enrollments
-    ->take(5) // Ambil 5 kursus teratas
-    ->get();
-    $allCourses = Course::all(); // Fetch all courses
-
-    return view('dashboard', compact('popularCourses', 'allCourses'));
 }
 
-public function viewContents($id)
-{
-    $course = Course::with('contents')->findOrFail($id);
-
-    return view('courses.contents', compact('course'));
-}
-
-
-    /**
-     * Fungsi untuk memeriksa apakah user memiliki akses untuk mengedit/menghapus kursus.
-     */
-    private function authorizeCourseAction(Course $course): bool
-    {
-        $user = auth()->user();
-
-        // Hanya Admin atau Teacher yang membuat course yang dapat mengedit/menghapus
-        return $user->hasRole('Admin') || ($user->hasRole('Teacher') && $course->user_id === $user->id);
-    }
-    public function showAll()
-{
-    $courses = Course::all();
-    return view('courses.showAll', compact('courses'));
-}
-
-}
