@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Progress extends Model
 {
     use HasFactory;
-
+    protected $table = 'progresses'; 
     protected $fillable = [
         'enrollment_id',
         'content_id',
-        'status',
-        'completed_at',
+        'is_completed',
+        
     ];
 
     /**

@@ -21,7 +21,7 @@ class ProgressController extends Controller
         }
 
         $progress->update([
-            'status' => $request->status,
+            'is_completed' => $request->status,
             'completed_at' => $request->status ? now() : null,
         ]);
 
@@ -34,7 +34,7 @@ class ProgressController extends Controller
         $enrollment = $content->course->enrollments->where('user_id', auth()->id())->first();
 
         if (!$enrollment) {
-            abort(403, 'You are not enrolled in this course.');
+            return redirect()->back()->with('error', 'You are not enrolled in this course.');
         }
 
         $progress = Progress::firstOrCreate([
@@ -43,10 +43,16 @@ class ProgressController extends Controller
         ]);
 
         $progress->update([
-            'status' => true,
+            'is_completed' => true,
             'completed_at' => now(),
         ]);
 
-        return redirect()->back()->with('success', 'Content marked as completed.');
+       // Update enrollment progress percentage
+       $totalContents = $content->course->contents->count();
+       $completedContents = $enrollment->progresses()->where('is_completed', true)->count();
+       $enrollment->progress = ($completedContents / $totalContents) * 100;
+       $enrollment->save();
+
+       return redirect()->route('contents.view', $content_id)->with('success', 'Content marked as done.');
     }
 }
