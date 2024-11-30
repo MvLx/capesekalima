@@ -19,5 +19,8 @@
     </form>
 
     <a href="{{ route('courses.contents', $content->course_id) }}" class="btn btn-secondary">Back to Contents</a>
+    <button type="button">
+        <a href="{{ route('dashboard') }}">Back to Dashboard</a>
+    </button>
 </div>
 @endsection

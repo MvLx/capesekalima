@@ -100,6 +100,7 @@ class CourseController extends Controller
     // Menghapus kursus dari database berdasarkan ID
     public function destroy($id)
     {
+        $course = Course::findOrFail($id);  
         if (!$this->authorizeCourseAction($course)) {
             abort(403, 'You are not authorized to delete this course.');
         }

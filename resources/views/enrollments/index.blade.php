@@ -28,6 +28,9 @@
                 </a>
             </li>
         @endforeach
+        <button type="button">
+            <a href="{{ route('dashboard') }}">Back to Dashboard</a>
+        </button>
     </ul>
 </body>
 </html>
