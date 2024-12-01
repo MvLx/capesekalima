@@ -17,21 +17,21 @@
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-100 scroll-smooth">
     {{-- NAVBAR SECTION --}}
     <nav class="bg-transparent absolute top-0 w-full z-50">
         <div class="max-w-screen-xl mx-auto flex items-center justify-between p-4">
             <!-- Logo -->
             <a href="#" class="flex items-center">
                 {{-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8" alt="Education Logo" /> --}}
-                <span class="ml-5 text-2xl font-semibold text-white">Education</span>
+                <span class="ml-5 text-2xl font-semibold text-white">Smart Course</span>
             </a>
             <!-- Navbar Links -->
             <div class="hidden md:flex items-center space-x-6">
                 <a href="#" class="text-white hover:text-gray-400 transition">Home</a>
-                <a href="#" class="text-white hover:text-gray-400 transition">All Courses</a>
-                <a href="#" class="text-white hover:text-gray-400 transition">About Us</a>
-                <a href="#" class="text-white hover:text-gray-400 transition">Contact</a>
+                <a href="#preview-section" class="text-white hover:text-gray-400 transition">All Courses</a>
+                <a href="#testimoni-section" class="text-white hover:text-gray-400 transition">About Us</a>
+                <a href="#footer-section" class="text-white hover:text-gray-400 transition">Contact</a>
                 <a href="{{ route('login') }}" class="bg-violet-600 text-white px-7 py-2 rounded-full hover:bg-violet-700 transition">Login</a>
                 <a href="{{ route('register') }}" class="bg-white text-black px-7 py-2 rounded-full hover:bg-violet-600 hover:text-white transition">Register</a>
             </div>
@@ -69,7 +69,7 @@
         </div>
     </section>
     {{-- PREVIEW SECTION --}}
-    <section class="py-16 bg-gray-100">
+    <section id="preview-section" class="py-16 bg-gray-100">
         <div class="container mx-auto px-4">
             <h2 class="text-3xl font-bold text-center">Preview</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
@@ -102,7 +102,7 @@
         </div>
     </section>
     {{-- TESTIMONI SECTION --}}
-    <section class="py-16 bg-gray-100">
+    <section id="testimoni-section" class="py-16 bg-gray-100">
         <div class="container mx-auto px-4">
             <h2 class="text-3xl font-bold text-center">Trusted by Thousand of Students and Tutors</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
@@ -156,7 +156,7 @@
 
     
 {{-- FOOTER SECTION --}}
-<footer class="bg-white dark:bg-gray-900">
+<footer id="footer-section" class="bg-white dark:bg-gray-900">
     <div class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
         <div class="md:flex md:justify-between ">
           <div class="mb-6 md:mb-0">

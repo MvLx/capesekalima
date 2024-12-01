@@ -1,21 +1,19 @@
-<nav x-data="{ open: false }" class="bg-white absolute top-0 w-full z-50 border-y border-gray-400 ">
+<nav x-data="{ open: false }" class="bg-white  absolute top-0 w-full z-50 border-y border-gray-400">
     <div class="max-w-screen-xl mx-auto flex items-center justify-between p-4">
         <!-- Logo -->
-            <a href="{{ route('dashboard') }}" class="flex ms-2 md:me-24">
-                <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-black">
-                    <p>Welcome, {{ auth()->user()->username ?? 'User' }}!</p>
-                </span>
-            </a>
-                            
-            <form class="hidden lg:block w-full max-w-lg lg:max-w-md mx-auto ">
-                <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-                <div class="relative mr-2">
-                  
-                    <!-- Search Input -->
-                    <input type="search" id="default-search" class="block w-full p-4 ps-12 text-sm text-black border border-black rounded-lg bg-white focus:ring-0 focus:outline-none focus:border-violet-600" placeholder="Search Course..." required />
-                    <button type="submit" class="text-white absolute end-2.5 bottom-2.5 bg-black hover:bg-violet-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2">Search</button>
-                </div>
-            </form>
+        <a href="{{ route('dashboard') }}" class="flex ms-2 md:me-24">
+            <span class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-black">
+                <p>Welcome, {{ auth()->user()->username ?? 'User' }}!</p>
+            </span>
+        </a>
+        <form action="{{ route('courses.search') }}" method="GET" class="hidden lg:block w-full max-w-lg lg:max-w-md mx-auto ">
+            <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+            <div class="relative mr-2">
+                <!-- Search Input -->
+                <input type="search" id="default-search" name="search" class="block w-full p-4 ps-12 text-sm text-black border border-black rounded-lg bg-white focus:ring-0 focus:outline-none focus:border-violet-600" placeholder="Search Course..." required />
+                <button type="submit" class="text-white absolute end-2.5 bottom-2.5 bg-black hover:bg-violet-600 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2">Search</button>
+            </div>
+        </form>
             
             
             
@@ -26,8 +24,6 @@
             <a href="{{ route('courses.showAll') }}" class="text-black hover:text-violet-600 transition">All Courses</a>
             @if(auth()->user()->role === 'Teacher')
             <a href="{{ route('courses.index') }}" class="text-black hover:text-violet-600 transition">Make Courses</a>
-            @endif
-            @if(auth()->user()->role === 'Teacher')
             <a href="{{ route('contents.index') }}" class="text-black hover:text-violet-600 transition">Make Content</a>
             @endif
             @if(auth()->user()->role === 'Student')
@@ -51,6 +47,8 @@
                 </button>
             </a>
             @endif
+           
+                  
             
              
 
@@ -78,6 +76,11 @@
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
+                        @if(auth()->user()->role === 'Admin')
+                        <x-dropdown-link :href="route('users.index')">
+                            {{ __('Manage Users') }}
+                        </x-dropdown-link>
+                        @endif
                     </x-slot>
                 </x-dropdown>
             </div>

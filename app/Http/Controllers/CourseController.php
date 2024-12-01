@@ -17,7 +17,10 @@ class CourseController extends Controller
     // Menampilkan daftar semua kursus
     public function index()
     {
-        $courses = Course::all();
+        $courses = Course::with(['enrollments' => function ($query) {
+            $query->with('user'); // Mengambil data user yang terdaftar
+        }])->get();
+    
         return view('courses.index', compact('courses'));
     }
 
@@ -51,20 +54,21 @@ class CourseController extends Controller
     // Menampilkan detail kursus berdasarkan ID
     public function show($id)
     {
-        $course = Course::with('enrollments.user')->findOrFail($id);
+        $course = Course::with('enrollments.user', 'contents')->findOrFail($id);
         return view('courses.show', compact('course'));
     }
 
     // Menampilkan form untuk mengedit kursus berdasarkan ID
     public function edit($id)
     {
-       
+        $course = Course::findOrFail($id);
+
         if (!$this->authorizeCourseAction($course)) {
             abort(403, 'You are not authorized to edit this course.');
         }
+
         return view('courses.edit', compact('course'));
     }
-
     // Memperbarui data kursus di database
     public function update(Request $request, $id)
     {
@@ -147,6 +151,20 @@ class CourseController extends Controller
     {
         $courses = Course::all();
         return view('courses.showAll', compact('courses'));
+    }
+
+    public function search(Request $request)
+    {
+        $request->validate([
+            'search' => 'required|string|max:255',
+        ]);
+    
+        $searchTerm = $request->input('search');
+        $courses = Course::where('course_name', 'LIKE', "%{$searchTerm}%")
+            ->orWhere('description', 'LIKE', "%{$searchTerm}%")
+            ->get();
+    
+        return view('courses.search', compact('courses')); // Mengarahkan ke courses.search
     }
 }
 
