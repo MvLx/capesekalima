@@ -27,7 +27,7 @@ class EnrollmentController extends Controller
 
 public function joinCourseForm()
 {
-    $courses = Course::with('user') // Pastikan 'teacher' digunakan, bukan 'user'
+    $courses = Course::with('user') // Pastikan 'teacher' digunakan, bukan 'user' (kebalik pakcik)
         ->whereDoesntHave('enrollments', function ($query) {
             $query->where('user_id', auth()->id());
         })
@@ -87,6 +87,12 @@ public function joinCourseForm()
             $enrollment->progress = 100;
         }
         $enrollment->save();
+
+        if ($enrollment->progress === 100) {
+            // Generate sertifikat
+            $certificateController = new CertificateController();
+            $certificateController->generate($enrollment->id);
+        }
 
         return redirect()->back()->with('success', 'Progress marked as completed.');
     }

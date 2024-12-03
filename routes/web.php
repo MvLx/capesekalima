@@ -9,11 +9,12 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DiscussionController;
+use App\Http\Controllers\ForumController;
+use App\Http\Controllers\CourseGuestController;
 
 // Halaman landing
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [CourseGuestController::class, 'index'])->name('welcome');
 
 // Tes PDF
 Route::get('/test-pdf', function () {
@@ -27,9 +28,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [CourseController::class, 'dashboard'])->name('dashboard');
 
     // Profil
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('profile/edit', [UserController::class, 'editProfile'])->name('profile.edit');
+    Route::patch('profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
+    Route::delete('/profile', [UserController::class, 'destroy'])->name('profile.destroy')->middleware('auth');
 
     // Sertifikat
     Route::resource('certificates', CertificateController::class)->only(['index']);
@@ -56,6 +57,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/contents/create', [ContentController::class, 'create'])->name('contents.create');
     Route::get('/contents/{id}', [ContentController::class, 'view'])->name('contents.view');
     Route::resource('contents', ContentController::class);
+
+    // Forums
+    Route::resource('forums', ForumController::class);
+    Route::get('courses/{course}/forums/create', [ForumController::class, 'create'])->name('forums.create');
+    Route::post('forums/{forum}/discussions', [DiscussionController::class, 'store'])->name('discussions.store');
+    Route::delete('discussions/{discussion}', [DiscussionController::class, 'destroy'])->name('discussions.destroy');
 });
 
 // Middleware khusus Admin dan Teacher
@@ -74,6 +81,8 @@ Route::middleware(['auth', 'role:Student'])->group(function () {
 });
 
 Route::middleware(['auth', 'role:Admin'])->group(function () {
+    Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+    Route::patch('users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::resource('users', UserController::class);
 });
 

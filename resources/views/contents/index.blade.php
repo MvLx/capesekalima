@@ -9,7 +9,7 @@
     <table class="table-auto w-full border-collapse border border-gray-200">
         <thead>
             <tr class="bg-gray-100">
-                <th class="border border-gray-300 px-4 py-2">#</th>
+                <th class="border border-gray-300 px-4 py-2">ID</th>
                 <th class="border border-gray-300 px-4 py-2">Title</th>
                 <th class="border border-gray-300 px-4 py-2">Media Type</th>
                 <th class="border border-gray-300 px-4 py-2">Actions</th>

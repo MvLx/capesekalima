@@ -15,6 +15,13 @@
         body, html {
             overflow-x: hidden;
         }
+        html {
+            scroll-behavior: smooth;
+        }
+        .scrollable-description {
+            max-height: 100px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body class="bg-gray-100 scroll-smooth">
@@ -28,7 +35,7 @@
             </a>
             <!-- Navbar Links -->
             <div class="hidden md:flex items-center space-x-6">
-                <a href="#" class="text-white hover:text-gray-400 transition">Home</a>
+                
                 <a href="#preview-section" class="text-white hover:text-gray-400 transition">All Courses</a>
                 <a href="#testimoni-section" class="text-white hover:text-gray-400 transition">About Us</a>
                 <a href="#footer-section" class="text-white hover:text-gray-400 transition">Contact</a>
@@ -50,9 +57,7 @@
             <div class="text-xl  uppercase mt-28">Welcome To Smart Course</div>
             <h1 id="quotes" class="text-5xl font-bold mt-4 break-words w-full max-w-3xl leading-relaxed">"Code is like humor. When you have to explain it, it’s bad."</h1>
             <p class="mt-4 text-lg">A Place Where You Can Find The Learning Materials You Need.</p>
-            <div class="mt-8">
-                <a class="bg-violet-600 text-white px-2 py-3 rounded mr-2 hover:bg-violet-700" href="#">View All Courses</a>
-            </div>
+            
         </div>
     </section>
     {{-- THINGS SECTION --}}
@@ -68,39 +73,21 @@
             </div>
         </div>
     </section>
+
     {{-- PREVIEW SECTION --}}
-    <section id="preview-section" class="py-16 bg-gray-100">
-        <div class="container mx-auto px-4">
-            <h2 class="text-3xl font-bold text-center">Preview</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-                <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-                    <img alt="HTML5/CSS3 Essentials" class="w-full h-48 object-cover" height="300" src="{{ asset('images/stockhtml.jpg') }}">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold">HTML5/CSS3 Essentials</h3>
-                        <p class="mt-2 text-gray-600">Start with HTML to build the web structure, then use CSS to make it more attractive and stylish!</p>
-                        <a class="mt-10 inline-block bg-violet-600 text-white px-4 py-2 rounded" href="#">See more...</a>
-                    </div>
+    <div id="preview-section" class="container mx-auto mt-10 p-8">
+        <h2 class="text-3xl font-bold text-center mb-6">Available Courses</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach($courses as $course)
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h3 class="text-xl font-semibold">{{ $course->course_name }}</h3>
+                    <p class="mt-2 scrollable-description">{{ $course->description }}</p>
+                    <a href="{{ route('courses.show', $course->id) }}" class="text-blue-500 mt-4 inline-block">View Details</a>
                 </div>
-                <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-                    <img alt="E-Commerce Course" class="w-full h-48 object-cover" height="300" src="{{ asset('images/ecommercestock.jpg') }}" width="400"/>
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold">Online Shopping Website Tutorial </h3>
-                        <p class="mt-2 text-gray-600">You can learn how to make website such like Online Shopping Website!</p>
-                        <a class="mt-10 inline-block bg-violet-600 text-white px-4 py-2 rounded" href="#">See more...</a>
-                    </div>
-                </div>
-                <div class="bg-white shadow-lg rounded-lg overflow-hidden">
-                    <img alt="WordPress Basic Tutorial" class="w-full h-48 object-cover" height="300" src="{{ asset('images/stockphp.jpg') }}"/>
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold">PHP Basic Tutorial</h3>
-                        <p class="mt-2 text-gray-600">PHP is a server-side programming language that allows you to build dynamic and interactive websites easily!</p>
-                        <a class="mt-4 inline-block bg-violet-600 text-white px-4 py-2 rounded" href="#">See more...</a>
-                    </div>
-                </div>
-                
-            </div>
+            @endforeach
         </div>
-    </section>
+    </div>
+
     {{-- TESTIMONI SECTION --}}
     <section id="testimoni-section" class="py-16 bg-gray-100">
         <div class="container mx-auto px-4">
@@ -162,7 +149,7 @@
           <div class="mb-6 md:mb-0">
               <a href="https://flowbite.com/" class="flex items-center">
                   {{-- <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 me-3" alt="FlowBite Logo" /> --}}
-                  <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Education</span>
+                  <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Smart Course</span>
               </a>
           </div>
           <div class="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-2">
@@ -229,11 +216,25 @@
 <script>
     // Daftar quotes
     const quotes = [
-        "Code is like humor. When you have to explain it, it’s bad.",
-        "First, solve the problem. Then, write the code.",
-        "Experience is the name everyone gives to their mistakes.",
-        "In order to be irreplaceable, one must always be different.",
-        "Java is to JavaScript what car is to Carpet."
+        "Learning is not about filling the mind, but about igniting the fire of curiosity.",
+
+        "Every mistake is an opportunity to learn something new.",
+
+        "True learning happens when we dare to step out of our comfort zones.",
+
+        "Knowledge is the key, and learning is the door that opens it.",
+
+        "Learning is not a final destination but a lifelong journey.",
+
+        "Success is the result of small efforts made daily through the process of learning.",
+
+        "There is no age limit for learning, as each day brings new lessons.",
+
+        "Learning is the best investment you can make for your future.",
+
+        "Learning teaches us how to see the world from different perspectives.",
+
+        "When we stop learning, we stop growing."
     ];
 
     // Pilih quote secara random

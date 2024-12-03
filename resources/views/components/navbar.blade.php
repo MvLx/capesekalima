@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="bg-white  absolute top-0 w-full z-50 border-y border-gray-400">
+<nav x-data="{ open: false }" class="bg-white absolute top-0 w-full z-50 border-y border-gray-400">
     <div class="max-w-screen-xl mx-auto flex items-center justify-between p-4">
         <!-- Logo -->
         <a href="{{ route('dashboard') }}" class="flex ms-2 md:me-24">
@@ -21,7 +21,7 @@
         
         <!-- Navbar Links -->
         <div class="hidden md:flex items-center space-x-6">
-            <a href="{{ route('courses.showAll') }}" class="text-black hover:text-violet-600 transition">All Courses</a>
+           
             @if(auth()->user()->role === 'Teacher')
             <a href="{{ route('courses.index') }}" class="text-black hover:text-violet-600 transition">Make Courses</a>
             <a href="{{ route('contents.index') }}" class="text-black hover:text-violet-600 transition">Make Content</a>

@@ -11,7 +11,9 @@ class ContentController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('role:Admin,Teacher,Student');
+        $this->middleware('role:Teacher,Admin')->only('index');
+
+        $this->middleware('role:Admin,Teacher,Student')->except('index');
     }
     public function index()
     {
@@ -40,7 +42,8 @@ class ContentController extends Controller
         $mediaPath = null;
         if ($request->media_type === 'video' || $request->media_type === 'file') {
             if ($request->hasFile('media_file')) {
-                            // dd($request->file('media_file')->getClientOriginalName());
+                // dd($request->file('media_file')->getClientOriginalName());
+
                 // Simpan file ke folder `storage/app/content_media`
                 $mediaPath = $request->file('media_file')->store('content_media', 'public');
             } else {
@@ -64,7 +67,7 @@ class ContentController extends Controller
             'media_type' => $request->media_type,
             'media_path' => $mediaPath,
         ]);
-
+        // dd('Content created successfully.');
         return redirect()->route('contents.index')->with('success', 'Content created successfully.');
     }
 
@@ -122,16 +125,19 @@ class ContentController extends Controller
  
          return redirect()->route('contents.index')->with('success', 'Content deleted successfully.');
      }
+
      public function view($id)
-     {
-        $content = Content::with('course.enrollments')->findOrFail($id);
-        // Periksa apakah pengguna telah bergabung dengan kursus
-        $userEnrolled = $content->course->enrollments->where('user_id', auth()->id())->count();
-        if (!$userEnrolled) {
-            return redirect()->route('courses.show', $content->course_id)
-                ->with('error', 'You must join the course to view this content.');
-        }
-     
-         return view('contents.view', compact('content'));
-     }
+{
+    $content = Content::with('course.enrollments')->findOrFail($id);
+
+    // Periksa apakah pengguna telah bergabung dengan kursus
+    $userEnrolled = $content->course->enrollments->where('user_id', auth()->id())->count();
+
+    if (!$userEnrolled) {
+        return redirect()->route('courses.show', $content->course_id)
+            ->with('error', 'You must join the course to view this content.');
+    }
+
+    return view('contents.view', compact('content'));
+}
 }

@@ -20,6 +20,7 @@
 
     <!-- Slider Container -->
     <div class="relative m-8 mt-20">
+        
         <!-- Tombol Navigasi Kiri -->
         <button id="prev" class="absolute left-0 top-1/2 transform -translate-y-1/2 -ml-4 bg-black hover:bg-violet-500 text-gray-800 font-bold py-2 px-4 rounded-full z-10">
             <img src="{{ asset('images/arr.png') }}" class="w-6 h-6">

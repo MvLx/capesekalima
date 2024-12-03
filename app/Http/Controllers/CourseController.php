@@ -1,6 +1,5 @@
 <?php
 
-// app/Http/Controllers/CourseController.php
 namespace App\Http\Controllers;
 
 use App\Models\Course;
@@ -11,18 +10,24 @@ class CourseController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('role:Admin,Teacher,Student');
+        // Batasi akses ke metode 'index' hanya untuk Teacher
+        $this->middleware('role:Teacher,Admin')->only('index');
+
+        // Semua pengguna (Admin, Teacher, Student) dapat mengakses metode selain 'index'
+        $this->middleware('role:Admin,Teacher,Student')->except('index');
     }
     
     // Menampilkan daftar semua kursus
-    public function index()
-    {
-        $courses = Course::with(['enrollments' => function ($query) {
-            $query->with('user'); // Mengambil data user yang terdaftar
-        }])->get();
-    
-        return view('courses.index', compact('courses'));
-    }
+
+public function index()
+{
+    $courses = Course::with(['enrollments' => function ($query) {
+        $query->with('user'); // Mengambil data user yang terdaftar
+    }])->get();
+
+    return view('courses.index', compact('courses'));
+}
+
 
     // Menampilkan form untuk membuat kursus baru
     public function create()
@@ -53,10 +58,10 @@ class CourseController extends Controller
 
     // Menampilkan detail kursus berdasarkan ID
     public function show($id)
-    {
-        $course = Course::with('enrollments.user', 'contents')->findOrFail($id);
-        return view('courses.show', compact('course'));
-    }
+{
+    $course = Course::with(['enrollments.user', 'contents', 'forums.discussions.user'])->findOrFail($id);
+    return view('courses.show', compact('course'));
+}
 
     // Menampilkan form untuk mengedit kursus berdasarkan ID
     public function edit($id)
@@ -69,6 +74,7 @@ class CourseController extends Controller
 
         return view('courses.edit', compact('course'));
     }
+
     // Memperbarui data kursus di database
     public function update(Request $request, $id)
     {
@@ -80,15 +86,18 @@ class CourseController extends Controller
         ]);
 
         $course = Course::findOrFail($id);
+
         if (!$this->authorizeCourseAction($course)) {
             abort(403, 'You are not authorized to update this course.');
         }
+
         $course->update([
             'course_name' => $request->course_name,
             'description' => $request->description,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
         ]);
+
         foreach ($course->enrollments as $enrollment) {
             NotificationController::createNotification(
                 $enrollment->user_id,
@@ -97,6 +106,7 @@ class CourseController extends Controller
                 $course->id
             );
         }
+    
 
         return redirect()->route('courses.index')->with('success', 'Course updated successfully.');
     }
@@ -104,7 +114,8 @@ class CourseController extends Controller
     // Menghapus kursus dari database berdasarkan ID
     public function destroy($id)
     {
-        $course = Course::findOrFail($id);  
+        $course = Course::findOrFail($id);
+
         if (!$this->authorizeCourseAction($course)) {
             abort(403, 'You are not authorized to delete this course.');
         }
@@ -115,42 +126,37 @@ class CourseController extends Controller
     }
 
     public function dashboard()
+{
+    $popularCourses = Course::withCount(['enrollments' => function ($query) {
+        $query->whereHas('user', function ($subQuery) {
+            $subQuery->where('role', 'Student'); // Hanya menghitung Student
+        });
+    }])
+    ->orderBy('enrollments_count', 'desc') // Urutkan berdasarkan jumlah enrollments
+    ->take(5) // Ambil 5 kursus teratas
+    ->get();
+    $allCourses = Course::all(); // Fetch all courses
+
+    return view('dashboard', compact('popularCourses', 'allCourses'));
+}
+
+public function viewContents($id)
+{
+    $course = Course::with('contents')->findOrFail($id);
+
+    return view('courses.contents', compact('course'));
+}
+
+
+    /**
+     * Fungsi untuk memeriksa apakah user memiliki akses untuk mengedit/menghapus kursus.
+     */
+    private function authorizeCourseAction(Course $course): bool
     {
-        $popularCourses = Course::withCount(['enrollments' => function ($query) {
-            $query->whereHas('user', function ($subQuery) {
-                $subQuery->where('role', 'Student'); // Hanya menghitung Student
-            });
-        }])
-        ->orderBy('enrollments_count', 'desc') // Urutkan berdasarkan jumlah enrollments
-        ->take(5) // Ambil 5 kursus teratas
-        ->get();
-        $allCourses = Course::all(); // Fetch all courses
-    
-        return view('dashboard', compact('popularCourses', 'allCourses'));
-    }
-    
-    public function viewContents($id)
-    {
-        $course = Course::with('contents')->findOrFail($id);
-    
-        return view('courses.contents', compact('course'));
-    }
-    
-    
-        /**
-         * Fungsi untuk memeriksa apakah user memiliki akses untuk mengedit/menghapus kursus.
-         */
-        private function authorizeCourseAction(Course $course): bool
-        {
-            $user = auth()->user();
-    
-            // Hanya Admin atau Teacher yang membuat course yang dapat mengedit/menghapus
-            return $user->hasRole('Admin') || ($user->hasRole('Teacher') && $course->user_id === $user->id);
-        }
-        public function showAll()
-    {
-        $courses = Course::all();
-        return view('courses.showAll', compact('courses'));
+        $user = auth()->user();
+
+        // Hanya Admin atau Teacher yang membuat course yang dapat mengedit/menghapus
+        return $user->hasRole('Admin') || ($user->hasRole('Teacher') && $course->user_id === $user->id);
     }
 
     public function search(Request $request)
@@ -167,4 +173,3 @@ class CourseController extends Controller
         return view('courses.search', compact('courses')); // Mengarahkan ke courses.search
     }
 }
-

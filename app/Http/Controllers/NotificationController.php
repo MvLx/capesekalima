@@ -40,13 +40,13 @@ class NotificationController extends Controller
     }
 
     public static function createNotification($userId, $title, $message, $courseId = null, $contentId = null)
-    {
-        Notification::create([
-            'user_id' => $userId,
-            'title' => $title,
-            'message' => $message,
-            'course_id' => $courseId,
-            'content_id' => $contentId,
-        ]);
-    }
+{
+    Notification::create([
+        'user_id' => $userId,
+        'title' => $title,
+        'message' => $message,
+        'course_id' => $courseId,
+        'content_id' => $contentId,
+    ]);
+}
 }
